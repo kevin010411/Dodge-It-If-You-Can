@@ -1,0 +1,103 @@
+{
+    "allPeriod": [
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.05,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 1,
+                "y": 0
+            }
+        },
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.3,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 1,
+                "y": 0
+            }
+        },
+        {
+            "start": 5,
+            "end": 20,
+            "interval": 0.4,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 1,
+                "y": 0
+            }
+        },
+        {
+            "start": 5,
+            "end": 20,
+            "interval": 0.1,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 1,
+                "y": 0
+            }
+        },
+        {
+            "start": 10,
+            "end": 20,
+            "interval": 0.11,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 1,
+                "y": 0
+            }
+        },
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.15,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.15,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 0.6,
+                "y": 0.8
+            }
+        },
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.1,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 0.2,
+                "y": 0.8
+            }
+        },
+        {
+            "start": 0,
+            "end": 20,
+            "interval": 0.04,
+            "prefabsDir": "Perfabs/WaterBullet",
+            "posision": "GeneratorPos",
+            "direct": {
+                "x": 0.6,
+                "y": 0.2
+            }
+        }
+    ]
+}

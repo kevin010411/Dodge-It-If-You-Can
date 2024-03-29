@@ -1,0 +1,4 @@
+repository "MusicGame@kevin010411@cloud"
+  path "/"
+    smartbranch "/main/GameEditScene"      
+     
