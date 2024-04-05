@@ -1,3 +1,4 @@
+using DevUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +12,14 @@ public class SoundManager : MonoBehaviour
     [HideInInspector]
     public float TrackLength;//改變成public且HideInSpector
     public Track LevelTrack;
+	public bool TriggerWhenFinished;
 
-    [SerializeField]
+	[SerializeField]
     public float TrackProgress = 0;
 
     [Range(0f, 1f)]
     public float PlayingStartTime = 0;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -40,8 +43,14 @@ public class SoundManager : MonoBehaviour
         TrackProgress = LevelTrack.LevelTrackSource.time;
         // Immediately changeable volume
         LevelTrack.LevelTrackSource.volume = LevelTrack.TrackVolume;
+		// Broadcast current track progress (current TimePoint)
+		SendMessage(FunctionNames.ReceiveCurrentTimePoint, TrackProgress);
 
-    }
+		if (LevelTrack.LevelTrackSource.isPlaying == false && TriggerWhenFinished)
+		{
+			SendMessage(FunctionNames.TriggerTrackFinished);
+		}
+	}
 
     /*
      * 下面是傅詳閎新增的function
@@ -53,5 +62,12 @@ public class SoundManager : MonoBehaviour
 	public void PlayMusic()
 	{
 		LevelTrack.LevelTrackSource.Play();
+	}
+    public void SetStartTime(float time)
+    {
+        if (time > TrackLength)
+            time = TrackLength;
+		LevelTrack.LevelTrackSource.time = time;
+		SendMessage(FunctionNames.ResetStage);
 	}
 }

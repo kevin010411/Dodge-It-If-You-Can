@@ -211,6 +211,47 @@
                     "interval": 0.15
                 }
             ]
+        },
+        {
+            "generatorInfo": {
+                "ClassName":"BulletGenerator",
+                "position": {
+                    "x": 0,
+                    "y": 7
+                },
+                "start": 0,
+                "end": 100,
+                "GeneratorParams": {
+                    "keys": [],
+                    "values": []
+                }
+            },
+            "content": [
+                {
+                    "ClassName": "DurationBullet",
+                    "BulletsParams": {
+                        "keys": [
+                            "SpritePath",
+                            "subSpriteName",
+                            "Speed",
+                            "Direction",
+                            "Duration",
+                            "posDescribe"
+                        ],
+                        "values": [
+                            "Assets/Bullets/Material/bullet_1.png",
+                            "bullet_1_11",
+                            "10",
+                            "{X:0,Y:-1}",
+                            "6",
+                            "GeneratorPos"
+                        ]
+                    },
+                    "start": 0,
+                    "end": 20,
+                    "interval": 0.1
+                }
+            ]
         }
     ]
 }

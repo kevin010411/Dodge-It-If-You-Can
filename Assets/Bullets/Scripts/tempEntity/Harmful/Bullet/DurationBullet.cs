@@ -17,10 +17,11 @@ public class DurationBullet : Harmful
 	public DurationBulletType BulletInfo;
 
 	private BulletTypeFactory factory;
-	protected Rigidbody2D myRigidbody;
 	protected SpriteRenderer myRenderer;
-
-	public void Init(Dictionary<string, string> bulletsParams)
+	private Vector2 InitPos;
+	private double StartTime;
+	public void Init(Dictionary<string, string> bulletsParams, double startTime,
+		Vector2 initPos)
 	{
 		Sprite sprite = null;
 		UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetRepresentationsAtPath(bulletsParams["SpritePath"]);
@@ -36,45 +37,38 @@ public class DurationBullet : Harmful
 			Debug.LogError($"再{bulletsParams["SpritePath"]}並未找到{bulletsParams["subSpriteName"]}");
 		float speed = float.Parse(bulletsParams["Speed"]);
 		float duration = float.Parse(bulletsParams["Duration"]);
-		string DirStr = bulletsParams["Direction"];
-		int startIdx = DirStr.IndexOf("X:") + 2;
-		float XDir = float.Parse(DirStr.Substring(startIdx, DirStr.IndexOf(",Y") - startIdx));
-		startIdx = DirStr.IndexOf("Y:") + 2;
-		float YDir = float.Parse(DirStr.Substring(startIdx, DirStr.IndexOf("}")- startIdx));
-		float slope = (float)Math.Sqrt(Math.Pow(XDir, 2) + Math.Pow(YDir, 2));
-		XDir /= slope;
-		YDir /= slope;
-		Vector2 direction = new Vector2(XDir,YDir);
+		Vector2 direction = NormalizeDirection(bulletsParams["Direction"]);
 		string posDescribe = bulletsParams["posDescribe"];
 		factory = BulletTypeFactory.GetBulletTypeFactory();
 		BulletInfo = factory.GetDurationBulletType(sprite, speed, duration, 
 													direction, posDescribe);
-		myRigidbody = GetComponent<Rigidbody2D>();
+		StartTime = startTime;
+		InitPos = initPos;
 		myRenderer = GetComponent<SpriteRenderer>();
 		myRenderer.sprite = BulletInfo.Image;
-		Destroy(gameObject, BulletInfo.Duration);
-		setDirect(BulletInfo.Direction);
 	}
-	public void Awake()
+	private Vector2 NormalizeDirection(string DirStr)
 	{
-		
+		int startIdx = DirStr.IndexOf("X:") + 2;
+		float XDir = float.Parse(DirStr.Substring(startIdx, DirStr.IndexOf(",Y") - startIdx));
+		startIdx = DirStr.IndexOf("Y:") + 2;
+		float YDir = float.Parse(DirStr.Substring(startIdx, DirStr.IndexOf("}") - startIdx));
+		float slope = (float)Math.Sqrt(Math.Pow(XDir, 2) + Math.Pow(YDir, 2));
+		XDir /= slope;
+		YDir /= slope;
+		return new Vector2(XDir, YDir);
 	}
-	public void FixedUpdate()
+	public void ReceiveCurrentTimePoint(float timeStamp)
 	{
-		transform.Rotate(0,0, 300f * Time.deltaTime);
-	}
-	public void setDirect(Vector2 direct)
-	{
-		if (myRigidbody != null)
+		if (timeStamp > StartTime + BulletInfo.Duration)
 		{
-			if (BulletInfo == null)
-			{
-				myRigidbody.velocity = direct * 2;
-			}
-			else
-			{
-				myRigidbody.velocity = direct * BulletInfo.Speed;
-			}
+			Destroy(gameObject);
+			return;
 		}
+		ComputePosition(timeStamp);
+	}
+	public void ComputePosition(float timeStamp)
+	{
+		transform.position = InitPos + BulletInfo.Direction * (timeStamp - (float)StartTime) * BulletInfo.Speed;
 	}
 }

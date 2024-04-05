@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,7 +25,6 @@ public class UIManager : MonoBehaviour
         SoundManager soundManager = StageController.GetComponent<SoundManager>();
         StageManager stageManager = StageController.GetComponent<StageManager>();
 
-
 		UI = GetComponent<UIDocument>();
         rootElement = UI.rootVisualElement;
 		MusicSlider = rootElement.Q<Slider>("MusicSlider");
@@ -37,16 +37,25 @@ public class UIManager : MonoBehaviour
         PauseButton = rootElement.Q<Button>("PauseButton");
         PauseButton.RegisterCallback<ClickEvent>((button) =>
         {
-            Debug.Log(button.ToString());
             soundManager.PauseMusic();
         });
 		MusicSlider.lowValue = 0;
         MusicSlider.highValue = 1;
         MusicSlider.RegisterValueChangedCallback((slide) =>
         {
-            TimeSpan time = new TimeSpan(0,0,Convert.ToInt32(slide.newValue * soundManager.TrackLength));
+            float nowStartTime = slide.newValue * soundManager.TrackLength;
+			TimeSpan time = new TimeSpan(0,0,Convert.ToInt32(nowStartTime));
             StartTimeLabel.text = $"現在時間:{time.Minutes:D2}:{time.Seconds:D2}";
+		});
+        MusicSlider.RegisterCallback<MouseCaptureEvent>((obj) =>
+        {
+            soundManager.PauseMusic();
         });
+        MusicSlider.RegisterCallback<MouseCaptureOutEvent>((obj) =>
+        {
+			float nowStartTime = MusicSlider.value * soundManager.TrackLength;
+			soundManager.SetStartTime(nowStartTime);
+		});
     }
 
     // Update is called once per frame

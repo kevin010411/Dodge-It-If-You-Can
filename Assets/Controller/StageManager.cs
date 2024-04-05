@@ -1,3 +1,4 @@
+using DevUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ public class StageManager:MonoBehaviour
 {
 	public StageInfo StageData;
 	private List<GameObject> aliveGenerator;
-	public double StartTime = 0;
+	public double timeStamp = 0;
 	private int index = 0;
 	public string DataName;
 	
@@ -24,18 +25,23 @@ public class StageManager:MonoBehaviour
 		//StageData.CreateTempData();
 		//JsonContorller.SaveStageInfo(StageData, DataName);
 	}
-	
-	public void FixedUpdate()
+	public void ReceiveCurrentTimePoint(double timeStamp)
 	{
-		StartTime += Time.deltaTime;
-		Operation(StartTime);
+		this.timeStamp = timeStamp;
+		Operation(timeStamp);
+	}
+	
+	public void ResetStageStatus()
+	{
+		index = 0;
+		CleanStage();
 	}
 
 	public void Operation(double timeStamp)
 	{
-		//Debug.Log(timeStamp);
 		TimedSpawnAndDestroyGenerator(timeStamp);
 		PassTimeToGenerator(timeStamp);
+		UpdateAllBulletPos(timeStamp);
 	}
 	
 	private void TimedSpawnAndDestroyGenerator(double timeStamp)
@@ -73,7 +79,6 @@ public class StageManager:MonoBehaviour
 			return;
 		while (index < StageData.Data.Count && StageData.Data[index].generatorInfo.start <= timeStamp)
 		{
-			
 			GameObject Generator = new GameObject($"Generator-{index}");
 			try
 			{
@@ -99,6 +104,33 @@ public class StageManager:MonoBehaviour
 			BulletGenerator nowGen = generator.GetComponent<BulletGenerator>();
 			nowGen.Operation(timeStamp);
 		}	
+	}
+
+	private void UpdateAllBulletPos(double timeStamp)
+	{
+		GameObject[] bullets = FindAllBullet();
+		foreach(GameObject bullet in bullets)
+		{
+			bullet.SendMessage(FunctionNames.ReceiveCurrentTimePoint, timeStamp);
+		}
+	}
+
+	private GameObject[] FindAllBullet()
+	{
+		return GameObject.FindGameObjectsWithTag("bullet");
+	}
+
+	private void CleanStage()
+	{
+		int Count = aliveGenerator.Count;
+		for (int i = 0; i < Count; ++i)
+		{
+			Destroy(aliveGenerator[0]);
+			aliveGenerator.RemoveAt(0);
+		}
+		GameObject[] bullets = FindAllBullet();
+		foreach (GameObject bullet in bullets)
+			Destroy(bullet);
 	}
 }
 
