@@ -10,6 +10,7 @@ using Vector2 = UnityEngine.Vector2;
  * BaseBulletsªºÀÉ®×
  * 
  */
+[assembly: BulletManager.RegisterBullet(typeof(DurationBullet))]
 [Serializable]
 public class DurationBullet : Harmful
 {
@@ -24,8 +25,12 @@ public class DurationBullet : Harmful
 		Vector2 initPos)
 	{
 		Sprite sprite = null;
-		UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetRepresentationsAtPath(bulletsParams["SpritePath"]);
-		foreach (var obj in objs)
+		if (bulletsParams["SpritePath"].Contains("Assets/Bullets/Material/"))
+			bulletsParams["SpritePath"] = bulletsParams["SpritePath"].Replace("Assets/Bullets/Material/", "Material/Bullet/");
+		if (bulletsParams["SpritePath"].Contains(".png"))
+			bulletsParams["SpritePath"] = bulletsParams["SpritePath"].Replace(".png","");
+		Sprite[] objs = Resources.LoadAll<Sprite>(bulletsParams["SpritePath"]);
+		foreach (Sprite obj in objs)
 		{
 			if (obj.name == bulletsParams["subSpriteName"])
 			{
@@ -70,5 +75,24 @@ public class DurationBullet : Harmful
 	public void ComputePosition(float timeStamp)
 	{
 		transform.position = InitPos + BulletInfo.Direction * (timeStamp - (float)StartTime) * BulletInfo.Speed;
+	}
+
+	public static SaveData.BulletInfo CreateInitBulletInfo()
+	{
+		Dictionary<string, string>  InitParams = CreateInitBulletParam();
+		SaveData.BulletInfo data = new SaveData.BulletInfo("DurationBullet", InitParams,0,0,1);
+		return data;
+	}
+	public static Dictionary<string, string> CreateInitBulletParam()
+	{
+		Dictionary<string, string> InitParams = new Dictionary<string, string>();
+		InitParams["Damage"] = "1";
+		InitParams["SpritePath"] = "/Material/Bullet/bullet_1.png";
+		InitParams["subSpriteName"] = "bullet_1_1";
+		InitParams["Speed"] = "1";
+		InitParams["Direction"] = "{X:-1,Y:0}";
+		InitParams["Duration"] = "0";
+		InitParams["posDescribe"] = "GeneratorPos";
+		return InitParams;
 	}
 }

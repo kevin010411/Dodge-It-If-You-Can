@@ -152,7 +152,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1586813013}
+  - {fileID: 2134023880}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &228312451
@@ -260,6 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3efcd9f07f236b547bf6b5ca0bac3c09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FollowObject: {fileID: 1688803115}
 --- !u!1 &267629707
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,7 +273,8 @@ GameObject:
   - component: {fileID: 267629712}
   - component: {fileID: 267629710}
   - component: {fileID: 267629714}
-  - component: {fileID: 267629715}
+  - component: {fileID: 267629716}
+  - component: {fileID: 267629717}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -340,8 +342,28 @@ MonoBehaviour:
   StageData:
     Data: []
   timeStamp: 0
-  DataName: test2.json
---- !u!114 &267629715
+  isEditMode: 0
+  DefaultDataDir: Desert/Level_1/StageChart.json
+--- !u!114 &267629716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267629707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afc27bc953127424abb0c2a439d4af94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CustomFolder: StageChart
+  CustomFileName: Chart1
+  SFXChartInJson: {fileID: 0}
+  MainSFXChart:
+    SFXLaunchCommands: []
+  CommandPointer: 0
+  CurrentTimePoint: 0
+--- !u!114 &267629717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -356,9 +378,9 @@ MonoBehaviour:
   TrackLength: 0
   LevelTrack:
     TrackIdentifier: 
-    LevelTrackClip: {fileID: 8300000, guid: 715f4f6deaf288345810f693061ae451, type: 3}
+    LevelTrackClip: {fileID: 8300000, guid: eb40e687212a1e141a0b55d31f74b747, type: 3}
     LevelTrackSource: {fileID: 0}
-    TrackVolume: 0.709
+    TrackVolume: 0.4
   TriggerWhenFinished: 0
   TrackProgress: 0
   PlayingStartTime: 0
@@ -723,7 +745,7 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &1586813012
+--- !u!1 &1651322726
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -731,37 +753,36 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1586813013}
-  - component: {fileID: 1586813014}
+  - component: {fileID: 1651322729}
+  - component: {fileID: 1651322728}
+  - component: {fileID: 1651322727}
   m_Layer: 0
-  m_Name: Desert
+  m_Name: RedHoodGuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1586813013
-Transform:
+--- !u!114 &1651322727
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1586813012}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
-  m_LocalScale: {x: 1.8699001, y: 1.8699001, z: 1.8699}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 187555448}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1586813014
+  m_GameObject: {fileID: 1651322726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d74eeac39d0b27e4fb3dc627b1082677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 1688803115}
+--- !u!212 &1651322728
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1586813012}
+  m_GameObject: {fileID: 1651322726}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -796,17 +817,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d67dbc12e8310894bbbca0931c911219, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8a50e2809457c304cb89d4e5370db8fa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 2
-  m_Size: {x: 50, y: 5.5}
+  m_DrawMode: 0
+  m_Size: {x: 4.99, y: 4.99}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!4 &1651322729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651322726}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1688803101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1037,6 +1073,11 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
+--- !u!4 &1688803115 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
+  m_PrefabInstance: {fileID: 1688803101}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1848427168
 GameObject:
   m_ObjectHideFlags: 0
@@ -1082,6 +1123,90 @@ Transform:
   - {fileID: 338598123}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2134023879
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2134023880}
+  - component: {fileID: 2134023881}
+  m_Layer: 0
+  m_Name: desertbackground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2134023880
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134023879}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.265, y: 0.242, z: 10}
+  m_LocalScale: {x: 1.8, y: 1.8, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 187555448}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &2134023881
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134023879}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 724690aaf1e47c942a55abe6bbd03d27, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 2
+  m_Size: {x: 50, y: 5.76}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1091,3 +1216,4 @@ SceneRoots:
   - {fileID: 187555448}
   - {fileID: 1848427170}
   - {fileID: 1688803101}
+  - {fileID: 1651322729}

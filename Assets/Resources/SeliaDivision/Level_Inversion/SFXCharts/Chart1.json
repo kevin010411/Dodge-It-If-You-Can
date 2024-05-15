@@ -1,0 +1,12 @@
+{
+    "SFXLaunchCommands": [
+        {
+            "LaunchTime": 5.5,
+            "SFXName": "blast1"
+        },
+        {
+            "LaunchTime": 10.5,
+            "SFXName": "in1"
+        }
+    ]
+}

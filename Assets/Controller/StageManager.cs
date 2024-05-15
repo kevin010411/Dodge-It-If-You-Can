@@ -1,11 +1,11 @@
 using DevUtils;
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.U2D.Aseprite;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -13,20 +13,34 @@ public class StageManager:MonoBehaviour
 {
 	public StageInfo StageData;
 	private List<GameObject> aliveGenerator;
+	private UIManager EditorUIManager;
 	public double timeStamp = 0;
+	public bool isEditMode;
 	private int index = 0;
-	public string DataName;
+	public string DefaultDataDir;
 	
 	public void Start()
 	{
 		StageData = new StageInfo();
 		aliveGenerator = new List<GameObject>();
-		StageData = JsonContorller.LoadStageInfo(DataName);
+		if(DefaultDataDir != "" )
+			LoadStageInfo($"{Application.dataPath}/Resources/{DefaultDataDir}");
+		try
+		{
+			EditorUIManager = GameObject.Find("/EditorUI").GetComponent<UIManager>();
+			Debug.Log("Editor Mode On");
+		}
+		catch { EditorUIManager = null; }
 		//StageData.CreateTempData();
 		//JsonContorller.SaveStageInfo(StageData, DataName);
 	}
+	public void SaveStageInfo(string StageName,string SubStageName,string fileName= "StageChart")
+	{
+		JsonController.SaveStageInfo(StageData, StageName, SubStageName, fileName);
+	}
 	public void ReceiveCurrentTimePoint(double timeStamp)
 	{
+		if(!enabled) { return; }
 		this.timeStamp = timeStamp;
 		Operation(timeStamp);
 	}
@@ -41,6 +55,7 @@ public class StageManager:MonoBehaviour
 	{
 		TimedSpawnAndDestroyGenerator(timeStamp);
 		PassTimeToGenerator(timeStamp);
+		CheckGeneratorVisibility();
 		UpdateAllBulletPos(timeStamp);
 	}
 	
@@ -59,7 +74,8 @@ public class StageManager:MonoBehaviour
 	{
 		List<GameObject> removeList = new List<GameObject>();
 		foreach (GameObject generator in aliveGenerator)
-			if (generator.GetComponent<BulletGenerator>().end <= timeStamp)
+			if (generator.GetComponent<BulletGenerator>().start > timeStamp ||
+				generator.GetComponent<BulletGenerator>().end <= timeStamp)
 				removeList.Add(generator);
 		foreach (GameObject generator in removeList)
 		{
@@ -80,11 +96,16 @@ public class StageManager:MonoBehaviour
 		while (index < StageData.Data.Count && StageData.Data[index].generatorInfo.start <= timeStamp)
 		{
 			GameObject Generator = new GameObject($"Generator-{index}");
+			Generator.tag = "generator";
+			Generator.AddComponent<BoxCollider2D>().isTrigger = true;
 			try
 			{
 				Type type = Type.GetType(StageData.Data[index].generatorInfo.ClassName); ;
 				BulletGenerator bulletGenerator = (BulletGenerator)Generator.AddComponent(type);
+				int nowIndex = index;
+				bulletGenerator.UpdateInfoEvent.AddListener((info) =>UpdataStageData(nowIndex, info));
 				bulletGenerator.InitData(StageData.Data[index]);
+				bulletGenerator.SetUIManager(EditorUIManager);
 				aliveGenerator.Add(Generator);
 			}
 			catch (Exception e)
@@ -92,7 +113,6 @@ public class StageManager:MonoBehaviour
 				Debug.LogError(e.Message);
 				Debug.LogError($"{StageData.Data[index].generatorInfo.ClassName}有問題，請去確認所有ClassName");
 			}
-			//Debug.Log("Spawn");
 			index++;
 		}
 	}
@@ -120,8 +140,36 @@ public class StageManager:MonoBehaviour
 		return GameObject.FindGameObjectsWithTag("bullet");
 	}
 
+	private void CheckGeneratorVisibility()
+	{
+		if(isEditMode) 
+		{
+			foreach(GameObject generator in aliveGenerator)
+			{
+				if (generator.GetComponent<SpriteRenderer>()==null)
+				{
+					generator.AddComponent<SpriteRenderer>().sprite = 
+						Resources.Load<Sprite>("Material/Generator/GeneratorIcon");
+					generator.GetComponent<BoxCollider2D>().enabled = true;
+				}
+			}	
+		}
+		else
+		{
+			foreach (GameObject generator in aliveGenerator)
+			{
+				if (generator.GetComponent<SpriteRenderer>() != null)
+				{
+					Destroy(generator.GetComponent<SpriteRenderer>());
+					generator.GetComponent<BoxCollider2D>().enabled = false;
+				}
+			}
+		}
+	}
+
 	private void CleanStage()
 	{
+		enabled = false;
 		int Count = aliveGenerator.Count;
 		for (int i = 0; i < Count; ++i)
 		{
@@ -131,13 +179,32 @@ public class StageManager:MonoBehaviour
 		GameObject[] bullets = FindAllBullet();
 		foreach (GameObject bullet in bullets)
 			Destroy(bullet);
+		enabled = true;
+	}
+
+	private void UpdataStageData(int genratorIndex,SaveData.GeneratorInfo info)
+	{
+		StageData.Data[genratorIndex].UpdataGeneratorInfo(info);
+	}
+	public void CreateNewGenerator()
+	{
+		StageData.Data.Add(new StageFragment(SaveData.GeneratorInfo.CreateEmptyInfo(timeStamp),
+			new List<SaveData.BulletInfo>()));
+		StageData.Data.Sort();
+		EditorUIManager.ClickPasueButton();
+	}
+	public void LoadStageInfo(string DataDir)
+	{
+		StageData = JsonController.LoadStageInfo(DataDir);
+		index = 0;
+		CleanStage();
 	}
 }
 
 [Serializable]
 public class StageInfo
 {
-	[Tooltip("Please Don't Change")]
+	[Tooltip("Only for looking Data")]
 	public List<StageFragment> Data;
 	public StageInfo()
 	{
@@ -164,5 +231,33 @@ public class StageInfo
 		StageFragment temp1 = new StageFragment(generatorInfo,bullets);
 		tempData.Add(temp1);
 		Data = tempData;
+	}
+}
+
+
+[Serializable]
+public class StageDescription
+{
+	public string MusicName;
+	[NonSerialized]
+	public string MusicPath;
+	public int TotalLife;
+	public string Name;
+	public string Description;
+	public StageDescription(string musicPath, int totalLife, string name, string description)
+	{
+		MusicPath = musicPath;
+		MusicName = Path.GetFileName(musicPath);
+		TotalLife = totalLife;
+		Name = name;
+		Description = description;
+	}
+	public StageDescription() 
+	{
+		MusicPath = "";
+		MusicName = "";
+		TotalLife = 0;
+		Name = "";
+		Description = "";
 	}
 }

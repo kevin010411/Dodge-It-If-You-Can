@@ -1,0 +1,42 @@
+.MainContainer {
+    top: 75%;
+    height: 25%;
+}
+
+.LabelRow {
+    flex-basis: 20%;
+    flex-direction: row;
+    -unity-font-style: bold;
+    font-size: 14px;
+    height: auto;
+}
+
+.tab {
+    -unity-text-align: middle-center;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    background-color: rgba(255, 179, 179, 0);
+    text-overflow: clip;
+    margin: 0;
+}
+
+.SelectedTab {
+    background-color: rgb(173, 166, 166);
+}
+
+.Content {
+    flex-direction: row-reverse;
+    flex-grow: 1;
+}
+
+.ContentBlock {
+    background-color: rgb(0, 120, 0);
+    justify-content: center;
+    margin: 5px;
+}
+
+.UnSelectContent {
+    display: none;
+}

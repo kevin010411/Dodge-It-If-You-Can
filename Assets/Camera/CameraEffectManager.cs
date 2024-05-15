@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CameraEffectManager : MonoBehaviour
 {
+
+    public Transform FollowObject;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -13,6 +16,6 @@ public class CameraEffectManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // transform.position = new Vector3(FollowObject.position.x, FollowObject.position.y, -10);
     }
 }

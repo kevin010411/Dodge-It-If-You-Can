@@ -11,10 +11,24 @@ public class HitBox : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Material originalMaterial;
     private Coroutine flashRoutine;
+
+    private bool canDash = true;
+    private bool isDashing = false;
+    private float dashingTime = 0.6f;
+    private float dashingCooldown = 1f;
+
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalMaterial = spriteRenderer.material;
+    }
+
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftShift)&&canDash)
+        {
+            StartCoroutine(Dash());
+        }
     }
 
     public void Flash()
@@ -25,6 +39,16 @@ public class HitBox : MonoBehaviour
         }
 
         flashRoutine = StartCoroutine(FlashRoutine());
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        yield return new WaitForSeconds(dashingTime);
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
     }
 
     private IEnumerator FlashRoutine()
@@ -38,7 +62,10 @@ public class HitBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Flash();
+        if(collision.gameObject.tag == "bullet" && !isDashing)
+        {
+            Flash();
+        }
     }
 
 }

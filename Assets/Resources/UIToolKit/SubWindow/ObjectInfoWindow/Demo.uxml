@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UIToolKit/SubWindow/ObjectInfoWindow/MainStyle.uss?fileID=7433441132597879392&amp;guid=bb4b5b1c22765314cbda1fdfc1a21789&amp;type=3#MainStyle" />
+    <EditorScene.ObjectInfoWindow style="border-right-width: 2px; border-left-width: 2px;" />
+</ui:UXML>

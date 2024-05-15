@@ -52,9 +52,6 @@ public class SoundManager : MonoBehaviour
 		}
 	}
 
-    /*
-     * 下面是傅詳閎新增的function
-     */
 	public void PauseMusic()
 	{
 		LevelTrack.LevelTrackSource.Pause();

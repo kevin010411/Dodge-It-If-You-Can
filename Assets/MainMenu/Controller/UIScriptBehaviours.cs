@@ -5,9 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class UIScriptBehaviours : MonoBehaviour
 {
+    public Animator Transition;
+    public float Duration = 2f;
+
     public void StartGame()
     {
-        SceneManager.LoadScene("Level1");
+        SceneLoadingController.Instance.LoadScene(
+            "SelectLevel", Transition, Duration, "TriggerClose", "close");
     }
     public void OpenEditMode()
     {   
