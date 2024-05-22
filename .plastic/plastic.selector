@@ -1,4 +1,3 @@
-repository "MusicGame@kevin010411@cloud"
+rep "MusicGame@kevin010411@cloud"
   path "/"
-    smartbranch "/main/GameEditScene" changeset "68"                                                             
-     
+    smartbranch "/main/GameEditScene"

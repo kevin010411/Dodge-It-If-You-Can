@@ -40,3 +40,28 @@
 .UnSelectContent {
     display: none;
 }
+
+.TabButton {
+    flex-direction: row;
+    align-items: center;
+    -unity-text-align: middle-center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    transition-property: opacity, background-color;
+    transition-duration: 0.2s, 0.2s;
+    transition-timing-function: ease-in-out, ease-in-out;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 21px;
+    padding-left: 21px;
+}
+
+.TabButton:active {
+    scale: 0.98 0.98;
+}
+
+.TabButton:hover {
+    background-color: rgb(28, 132, 255);
+}

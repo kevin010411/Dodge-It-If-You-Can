@@ -98,11 +98,20 @@ namespace EditorScene
 			container.Q<Toggle>("").Q<VisualElement>("").Add(RemoveButton);
 
 			Type testType = BulletManager.GetBulletManager().GetBulletEnum();
-			Enum InitType = (Enum)Enum.Parse(testType, bulletInfo.ClassName);
-			EnumField BulletRow = new EnumField("ClassName:", InitType);
+			Enum BulletClassEnum = (Enum)Enum.Parse(testType, bulletInfo.ClassName);
+			EnumField BulletRow = new EnumField("ClassName:", BulletClassEnum);
 			BulletRow.RegisterCallback<ChangeEvent<Enum>>(evt =>
 			{
-				_UpdateBullet(container);
+				Type newBulletClass = Type.GetType(evt.newValue.ToString());
+				MethodInfo BuildInitParam = newBulletClass.GetMethod("CreateInitBulletInfo", BindingFlags.Static | BindingFlags.Public);
+				SaveData.BulletInfo InitInfo = (SaveData.BulletInfo)BuildInitParam.Invoke(null,null);
+				Foldout BulletInfoContainer = GetBulletInfoContainer();
+				int index = BulletInfoContainer.IndexOf(container);
+				int childCount = container.parent.childCount-2;
+				UpdateBulletInfo.Invoke(index, null);
+				container.RemoveFromHierarchy();
+				AddBulletFoldOut(InitInfo);
+				UpdateBulletInfo.Invoke(childCount, InitInfo);
 			});
 			BulletRow.AddToClassList("paramRow");
 			container.Add(BulletRow);

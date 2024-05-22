@@ -10,11 +10,13 @@ public class BulletTypeFactory
 {
     private static BulletTypeFactory instance;
     private Dictionary<string,DurationBulletType> DurationType;
-    private BulletTypeFactory() 
-    {
+    private Dictionary<string,InverseBulletType> InverseType;
+    private BulletTypeFactory()
+	{
         DurationType = new Dictionary<string, DurationBulletType>();
-    }
-    public DurationBulletType GetDurationBulletType(Sprite image, float speed,
+		InverseType = new Dictionary<string, InverseBulletType>();
+	}
+	public DurationBulletType GetDurationBulletType(Sprite image, float speed,
 		float duration, Vector2 direction, string posDescribe)
     {
         string TypeName = image.name + speed.ToString() + duration.ToString() + direction.ToString() + posDescribe;
@@ -26,7 +28,19 @@ public class BulletTypeFactory
         }
         return DurationType[TypeName];
     }
-    public static BulletTypeFactory GetBulletTypeFactory() 
+	public InverseBulletType GetInverseBulletType(Sprite image, float speed,
+		float duration, Vector2 direction, string posDescribe)
+	{
+		string TypeName = image.name + speed.ToString() + duration.ToString() + direction.ToString() + posDescribe;
+		if (!InverseType.ContainsKey(TypeName))
+		{
+			InverseBulletType newType = InverseBulletType.CreateInstance<InverseBulletType>();
+			newType.Init(image, speed, duration, direction, posDescribe);
+			InverseType[TypeName] = newType;
+		}
+		return InverseType[TypeName];
+	}
+	public static BulletTypeFactory GetBulletTypeFactory() 
     {
         if (instance == null)
             instance = new BulletTypeFactory();

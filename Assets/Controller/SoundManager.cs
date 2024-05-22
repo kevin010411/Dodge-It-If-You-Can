@@ -1,70 +1,97 @@
 using DevUtils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
+using NLayer;
 
 public class SoundManager : MonoBehaviour
 {
-
-    [HideInInspector]
-    public float TrackLength;//改變成public且HideInSpector
-    public Track LevelTrack;
-	public bool TriggerWhenFinished;
-
-	[SerializeField]
-    public float TrackProgress = 0;
-
-    [Range(0f, 1f)]
-    public float PlayingStartTime = 0;
-
+    [SerializeField] private AudioClip LevelTrack;
+    [SerializeField] private AudioSource AudioSource;
+    [SerializeField] private bool Pause = false;
+    [SerializeField][Range(0f, 1f)] private float MusicVolume; 
+    [SerializeField][Range(0f, 1f)] private float PlayingStartTime = 0;
+    [HideInInspector] public float TrackLength;
+    [HideInInspector] public float TrackProgress;
 
     // Start is called before the first frame update
     void Awake()
     {
-        // Configuration of AudioSource
-        LevelTrack.LevelTrackSource = gameObject.AddComponent<AudioSource>();
-        LevelTrack.LevelTrackSource.clip = LevelTrack.LevelTrackClip;
-        LevelTrack.LevelTrackSource.volume = LevelTrack.TrackVolume;
-        // Get track length
-        TrackLength = LevelTrack.LevelTrackClip.length;
-        // Play
-        LevelTrack.LevelTrackSource.time = TrackLength * PlayingStartTime;
-        LevelTrack.LevelTrackSource.Play();
+        if(AudioSource == null)
+        {
+            this.AudioSource = gameObject.AddComponent<AudioSource>();
+        }
+        AudioSource.clip = LevelTrack;
+        TrackLength = AudioSource.clip.length;
+        TrackProgress = TrackLength * PlayingStartTime;
+        AudioSource.time = TrackProgress;
+        AudioSource.Play();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Pause) { 
+            StartCoroutine(HandlePauseEvent()); 
+        }
+        else
+        {
+            TrackProgress = AudioSource.time;
+        }
 
-        // Updating time progress each frame
-        TrackProgress = LevelTrack.LevelTrackSource.time;
-        // Immediately changeable volume
-        LevelTrack.LevelTrackSource.volume = LevelTrack.TrackVolume;
-		// Broadcast current track progress (current TimePoint)
-		SendMessage(FunctionNames.ReceiveCurrentTimePoint, TrackProgress);
-
-		if (LevelTrack.LevelTrackSource.isPlaying == false && TriggerWhenFinished)
-		{
-			SendMessage(FunctionNames.TriggerTrackFinished);
-		}
+        SendMessage(FunctionNames.ReceiveCurrentTimePoint, TrackProgress);
+        this.AudioSource.volume = MusicVolume;
 	}
 
 	public void PauseMusic()
 	{
-		LevelTrack.LevelTrackSource.Pause();
+        Pause = true;
 	}
+
 	public void PlayMusic()
 	{
-		LevelTrack.LevelTrackSource.Play();
+        Pause = false;
 	}
-    public void SetStartTime(float time)
+
+    private IEnumerator HandlePauseEvent()
     {
-        if (time > TrackLength)
-            time = TrackLength;
-		LevelTrack.LevelTrackSource.time = time;
-		SendMessage(FunctionNames.ResetStage);
+        AudioSource.Pause();
+        yield return new WaitWhile(() => Pause);
+        AudioSource.UnPause();
+    }
+
+    public void SetStartTime(float Time, bool DoResetStage = true)
+    {
+        this.AudioSource.time = Time;
 	}
+    
+    public void ChangeTrack(string AudioPath)
+    {
+        var TargetFileStream = File.OpenRead(AudioPath);
+        AudioClip AudioClipToChange = FromMp3Stream(TargetFileStream);
+
+        LevelTrack = AudioClipToChange;
+        this.AudioSource.clip = AudioClipToChange;
+        this.AudioSource.Play();
+    }
+
+    private AudioClip FromMp3Stream(Stream Mp3Stream)
+    {
+        var Mp3Reader = new MpegFile(Mp3Stream);
+        var Samples = new float[Mp3Reader.Length / sizeof(float)];
+        Mp3Reader.ReadSamples(Samples, 0, Samples.Length);
+
+        AudioClip NewlyCreatedAudioClip =
+            AudioClip.Create(
+                "LoadedMp3",
+                Samples.Length / Mp3Reader.Channels,
+                Mp3Reader.Channels,
+                Mp3Reader.SampleRate,
+                false);
+
+        NewlyCreatedAudioClip.SetData(Samples, 0);
+        return NewlyCreatedAudioClip;
+    }
 }

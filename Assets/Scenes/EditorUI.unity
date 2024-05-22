@@ -509,15 +509,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e40ebdde1a71474a943652950e80ea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackLength: 0
-  LevelTrack:
-    TrackIdentifier: Inversion
-    LevelTrackClip: {fileID: 8300000, guid: 0143f39e98294994a9262e4af4f8ca54, type: 3}
-    LevelTrackSource: {fileID: 0}
-    TrackVolume: 0.709
-  TriggerWhenFinished: 0
-  TrackProgress: 0
+  LevelTrack: {fileID: 8300000, guid: 715f4f6deaf288345810f693061ae451, type: 3}
+  AudioSource: {fileID: 0}
+  Pause: 0
+  MusicVolume: 0.5
   PlayingStartTime: 0
+  TrackLength: 0
+  TrackProgress: 0
 --- !u!4 &646849700
 Transform:
   m_ObjectHideFlags: 0
@@ -542,12 +540,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0136
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.3691
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 1843782793552778099, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -723,7 +729,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acae2d115139b824c90b616248162cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camaraMoveSpeed: 1
+  cameraMoveSpeed: 1
   zoomSpeed: 3
   AngleClick:
     m_PersistentCalls:
@@ -789,6 +795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35204476fbe42e945b715b3925fb5069, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsRemoveMode: 0
 --- !u!1 &1641393917
 GameObject:
   m_ObjectHideFlags: 0

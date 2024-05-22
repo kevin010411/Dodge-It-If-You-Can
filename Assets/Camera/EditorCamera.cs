@@ -33,9 +33,14 @@ public class EditorCamera : MonoBehaviour
 		{
 			return;
 		}
-		else if (EventSystem.current.IsPointerOverGameObject() || Input.GetMouseButtonUp(0))
+		if (_CurrentMode == Mode.UponObject || 
+			EventSystem.current.IsPointerOverGameObject() || Input.GetMouseButtonUp(0))
 		{
 			_ResetCurrentMode();
+			if (EventSystem.current.IsPointerOverGameObject())
+			{
+				_CurrentMode = Mode.UponObject;
+			}
 		}
 		else if (Input.GetMouseButtonDown(0) && _CurrentMode == Mode.Default)
 		{
@@ -64,14 +69,22 @@ public class EditorCamera : MonoBehaviour
 	// For FindAngle Mode
 	private GameObject line;
 
-	private enum Mode { Default,FindAngle,DraggingGenerator,DraggingCamera};
+	private enum Mode { 
+		Default,FindAngle,
+		DraggingGenerator,DraggingCamera,
+		UponObject
+	};
 	private Mode _CurrentMode = Mode.Default;
 	
 	public void ChangeEditAngleMode()
 	{
 		switch (_CurrentMode)
 		{
-			case Mode.Default:
+			case Mode.FindAngle:
+				_CurrentMode = Mode.Default;
+				Destroy(line);
+				break;
+			default:
 				_CurrentMode = Mode.FindAngle;
 				line = new GameObject("Arrow");
 				DrawArrow Arrow = line.AddComponent<DrawArrow>();
@@ -79,12 +92,9 @@ public class EditorCamera : MonoBehaviour
 				Arrow.tipWidth = 1f;
 				Arrow.stemWidth = 0.5f;
 				break;
-			case Mode.FindAngle:
-				_CurrentMode = Mode.Default;
-				Destroy(line);
-				break;
 		}
 	}
+
 
 	public UnityEvent<float> AngleClick = new UnityEvent<float>();
 
@@ -119,7 +129,6 @@ public class EditorCamera : MonoBehaviour
 
 	private void _MouseClick()
 	{
-		_UpdateCurrentMode();
 		switch (_CurrentMode)
 		{
 			case Mode.DraggingCamera:
@@ -145,12 +154,13 @@ public class EditorCamera : MonoBehaviour
 		float scrollAmount = Input.GetAxis("Mouse ScrollWheel");
 		Camera.main.orthographicSize -= scrollAmount * zoomSpeed;
 	}
-	
 	private void _MouseScroll()
 	{
 		switch (_CurrentMode)
 		{
 			case Mode.FindAngle:
+				break;
+			case Mode.UponObject:
 				break;
 			default:
 				_ChangeSightDistance();
@@ -160,6 +170,7 @@ public class EditorCamera : MonoBehaviour
 
 	void Update()
     {
+		_UpdateCurrentMode();
 		_MouseClick();
 		_MouseScroll();
 	}

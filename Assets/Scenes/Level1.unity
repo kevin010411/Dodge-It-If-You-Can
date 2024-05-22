@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 228312455}
   m_Layer: 0
   m_Name: MainCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -274,7 +274,9 @@ GameObject:
   - component: {fileID: 267629710}
   - component: {fileID: 267629714}
   - component: {fileID: 267629716}
-  - component: {fileID: 267629717}
+  - component: {fileID: 267629719}
+  - component: {fileID: 267629718}
+  - component: {fileID: 267629720}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -343,7 +345,7 @@ MonoBehaviour:
     Data: []
   timeStamp: 0
   isEditMode: 0
-  DefaultDataDir: Desert/Level_1/StageChart.json
+  DefaultDataDir: StageChart/Desert/Level_1/StageChart.json
 --- !u!114 &267629716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,14 +358,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afc27bc953127424abb0c2a439d4af94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CustomFolder: StageChart
-  CustomFileName: Chart1
+  RunInEventMode: 0
+  CustomSFXFolderPath: SeliaDivision/Level_Inversion/SFXs
   SFXChartInJson: {fileID: 0}
+  RegisteredSoundEffects: []
+  CustomFilePath: SeliaDivision/Level_Inversion/SFXCharts/Chart1
   MainSFXChart:
     SFXLaunchCommands: []
   CommandPointer: 0
   CurrentTimePoint: 0
---- !u!114 &267629717
+--- !u!114 &267629718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267629707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d488e99cc10a6340b1366baa0830574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UITemplateList:
+  - {fileID: 6908322876801296254, guid: e28bda7691be01f47b62e7d991a78bc6, type: 3}
+--- !u!114 &267629719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267629707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2872ece2b10c3c640b6322fe960b2f7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &267629720
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -375,15 +405,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e40ebdde1a71474a943652950e80ea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackLength: 0
-  LevelTrack:
-    TrackIdentifier: 
-    LevelTrackClip: {fileID: 8300000, guid: eb40e687212a1e141a0b55d31f74b747, type: 3}
-    LevelTrackSource: {fileID: 0}
-    TrackVolume: 0.4
-  TriggerWhenFinished: 0
-  TrackProgress: 0
+  LevelTrack: {fileID: 8300000, guid: 715f4f6deaf288345810f693061ae451, type: 3}
+  AudioSource: {fileID: 0}
+  Pause: 1
+  MusicVolume: 0.5
   PlayingStartTime: 0
+  TrackLength: 0
+  TrackProgress: 0
 --- !u!1 &338598122
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,7 +803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d74eeac39d0b27e4fb3dc627b1082677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 1688803115}
+  Player: {fileID: 1651322729}
 --- !u!212 &1651322728
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -923,6 +951,14 @@ PrefabInstance:
       propertyPath: tr
       value: 
       objectReference: {fileID: 1688803108}
+    - target: {fileID: 4972402011889136126, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
+      propertyPath: Cam
+      value: 
+      objectReference: {fileID: 228312453}
+    - target: {fileID: 4972402011889136126, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
+      propertyPath: wallCheck
+      value: 
+      objectReference: {fileID: 1688803115}
     - target: {fileID: 4972402011889136126, guid: 7d120e56f0aa95d41907d29392f2465f, type: 3}
       propertyPath: jumpingPower
       value: 15

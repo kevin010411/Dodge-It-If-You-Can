@@ -15,11 +15,13 @@ static public class JsonController
 		string Data = JsonUtility.ToJson(SaveData);
 		try
 		{
-			// TODO 檢查是否相同 相同不做事，不相同則刪除
-			if (File.Exists(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3"))
-				File.Delete(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3");
-			File.Copy(SaveData.MusicPath, Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3",true);
-			//FileUtil.CopyFileOrDirectory(SaveData.MusicPath, Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3");
+			if (Directory.Exists(SaveData.MusicPath))
+			{
+				// TODO 檢查是否相同 相同不做事，不相同則刪除
+				if (File.Exists(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3"))
+					File.Delete(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3");
+				File.Copy(SaveData.MusicPath, Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3", true);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -82,7 +84,10 @@ static public class JsonController
 	static private string _ComputeSaveDir(string StageName
 		, string SubStageName, string SaveFileName)
 	{
-		return $"{Application.dataPath}/Resources/{StageName}/{SubStageName}/{SaveFileName}.json";
+		if (Application.isEditor)
+			return $"{Application.dataPath}/Resources/StageChart/{StageName}/{SubStageName}/{SaveFileName}.json";
+		else
+			return $"{Application.persistentDataPath}/Resources/StageChart/{StageName}/{SubStageName}/{SaveFileName}.json";
 	}
 
 	static public StageInfo LoadStageInfo(string LoadDir)

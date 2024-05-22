@@ -21,7 +21,13 @@ public class StageFragment:IComparable<StageFragment>
 	public int CompareTo(StageFragment other)
 	{
 		if (this.generatorInfo.start < other.generatorInfo.start) return -1;
-		else if (this.generatorInfo.start == other.generatorInfo.start) return 0;
+		else if (this.generatorInfo.start == other.generatorInfo.start)
+		{
+			if(this.generatorInfo.end < other.generatorInfo.end)
+				return -1;
+			else if(this.generatorInfo.end == other.generatorInfo.end)
+				return 0;
+		}
 		return 1;
 	}
 }
@@ -44,11 +50,11 @@ namespace SaveData
 			this.end = end;
 			GeneratorParams = new SerializedDictionary<string, string>(generatorParams);
 		}
-		public static GeneratorInfo CreateEmptyInfo(double nowTime)
+		public static GeneratorInfo CreateEmptyGenerator(double nowTime)
 		{
-			nowTime = Math.Round(nowTime,3);
+			nowTime = Math.Round(nowTime,1);
 			return new GeneratorInfo("BulletGenerator", Vector2.zero
-				, nowTime, nowTime+5, new Dictionary<string, string>());
+				, nowTime-Math.Min(2,nowTime), nowTime+3, new Dictionary<string, string>());
 		}
 	}
 	[Serializable]

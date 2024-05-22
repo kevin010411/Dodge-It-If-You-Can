@@ -10,15 +10,16 @@ using UnityEngine.UIElements;
 [assembly: GeneratorManager.RegisterGenerator(typeof(BulletGenerator))]
 public class BulletGenerator : MonoBehaviour
 {
-	[HideInInspector]
+	//[HideInInspector]
 	public double start;
-	[HideInInspector]
+	//[HideInInspector]
 	public double end;
+	public int Index;
 	public UIManager editorUI = null;
 	protected List<SaveData.FirePoint> content;
 	protected List<SaveData.BulletInfo> bulletInfo;
 	public Dictionary<string, string> GeneratorParams;
-	private int index = 0;
+	private int BullletIndex = 0;
 	public void InitData(StageFragment fragment)
 	{
 		start = fragment.generatorInfo.start;
@@ -31,12 +32,12 @@ public class BulletGenerator : MonoBehaviour
 		foreach (SaveData.BulletInfo bullet in fragment.content)
 			content.AddRange(bullet.SplitToPoint());
 		content.Sort();
-		index = 0;
+		BullletIndex = 0;
 	}
 
 	public void ResetIndex()
 	{
-		index = 0;
+		BullletIndex = 0;
 	}
 	public void SetUIManager(UIManager uIManager)
 	{
@@ -46,24 +47,24 @@ public class BulletGenerator : MonoBehaviour
 	{
 		while (CheckBulletSpawn(timeStamp))
 		{
-			CreateBullet(content[index].FireTime);
-			index++;
+			CreateBullet(content[BullletIndex].FireTime);
+			BullletIndex++;
 		}
 	}
 	private bool CheckBulletSpawn(double timeStamp)
 	{
-		if (index >= content.Count)
+		if (BullletIndex >= content.Count)
 			return false;
-		if (index < content.Count && content[index].FireTime < timeStamp)
+		if (BullletIndex < content.Count && content[BullletIndex].FireTime < timeStamp)
 			return true;
 		return false;
 	}
 	private void CreateBullet(double spawnTime)
 	{
-		GameObject tempObj = new GameObject($"Bullet-{index}");
+		GameObject tempObj = new GameObject($"Bullet-{BullletIndex}");
 		tempObj.tag = "bullet";
 		Transform tempTransform = tempObj.transform;
-		string posDescribe = content[index].BulletsParams["posDescribe"];
+		string posDescribe = content[BullletIndex].BulletsParams["posDescribe"];
 		if (posDescribe == "GeneratorPos")
 			tempTransform.position = transform.position;
 		SpriteRenderer renderer = tempObj.AddComponent<SpriteRenderer>();
@@ -72,24 +73,25 @@ public class BulletGenerator : MonoBehaviour
 		circleCollider2D.radius = 0.22f;
 		try
 		{
-			Type type = Type.GetType(content[index].ClassName);
+			Type type = Type.GetType(content[BullletIndex].ClassName);
 			// TODO這邊是使用DurationBullet當作最高的父節點
 			DurationBullet bullet = (DurationBullet)tempObj.AddComponent(type);
-			bullet.Init(content[index].BulletsParams, spawnTime, transform.position);
+			bullet.Init(content[BullletIndex].BulletsParams, spawnTime, transform.position);
 		}
 		catch (Exception e)
 		{
 			Debug.LogError(e.Message);
-			Debug.LogError($"{content[index].ClassName}有問題，請去確認所有ClassName");
+			Debug.LogError($"{content[BullletIndex].ClassName}有問題，請去確認所有ClassName");
 		}
 	}
-	public UnityEvent<SaveData.GeneratorInfo> UpdateInfoEvent = new UnityEvent<SaveData.GeneratorInfo>();
+	public UnityEvent<int,SaveData.GeneratorInfo> UpdateInfoEvent = new UnityEvent<int,SaveData.GeneratorInfo>();
 	
 	public void UpdateGenerator()
 	{
 		SaveData.GeneratorInfo newInfo = new SaveData.GeneratorInfo("BulletGenerator",
 			transform.position, start, end, GeneratorParams);
-		UpdateInfoEvent.Invoke(newInfo);
+		
+		UpdateInfoEvent.Invoke(Index,newInfo);
 	}
 
 	private void _ShowObjectInfoWindow()
@@ -113,10 +115,7 @@ public class BulletGenerator : MonoBehaviour
 		foreach(TextField field in lines)
 			field.RegisterCallback<FocusOutEvent>(evt =>
 			{
-				Dictionary<string, string> dict = new Dictionary<string, string>();
-				foreach (TextField field in lines)
-					dict[field.label] = field.value;
-				GeneratorParams = dict;
+				GeneratorParams[field.name] = field.value;
 				UpdateGenerator();
 			});
 
@@ -127,19 +126,22 @@ public class BulletGenerator : MonoBehaviour
 		window.UpdateBulletInfo.AddListener(UpdataBulletInfo);
 	}
 
-	private void UpdataBulletInfo(int index,SaveData.BulletInfo newData)
+	private void UpdataBulletInfo(int BulletIndex,SaveData.BulletInfo newData)
 	{
 		if (newData == null)
 		{
-			bulletInfo.RemoveAt(index);
+			//Debug.Log($"Remove{BulletIndex}");
+			bulletInfo.RemoveAt(BulletIndex);
 		}
-		else if(index == bulletInfo.Count)
+		else if(BulletIndex == bulletInfo.Count)
 		{
+			//Debug.Log($"Add{BulletIndex}");
 			bulletInfo.Add(newData);
 		}
 		else
 		{
-			bulletInfo[index] = newData;
+			//Debug.Log($"Edit{BulletIndex}");
+			bulletInfo[BulletIndex] = newData;
 		}
 
 		// TODO 改進這個沒動腦的浪費
@@ -151,9 +153,16 @@ public class BulletGenerator : MonoBehaviour
 		//Debug.Log(content.Count());
 	}
 
+	public UnityEvent<int> RemoveGeneratorEvent = new UnityEvent<int>();
+	public void RemoveGenerator()
+	{
+		RemoveGeneratorEvent.Invoke(Index);
+	}
+
 	public void OnDestroy()
 	{
-		editorUI.CloseObjectInfoWindow();
+		if(editorUI != null)
+			editorUI.CloseObjectInfoWindow();
 	}
 
 	public void OnMouseUp()
@@ -165,6 +174,12 @@ public class BulletGenerator : MonoBehaviour
 	private float _MousePressTime = 0;
 	public void OnMouseDown()
 	{
+		if (editorUI.IsRemoveMode)
+		{
+			//Debug.Log($"Remove{this.gameObject.name}");
+			RemoveGenerator();
+			Destroy(this.gameObject);
+		}
 		_MousePressTime = Time.time;
 	}
 

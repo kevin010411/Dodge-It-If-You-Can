@@ -9,7 +9,7 @@ public class StageUIManager : MonoBehaviour
     public List<GameObject>UITemplateList = new List<GameObject>();
     private Dictionary<string, GameObject> UITemplateDict = new Dictionary<string, GameObject>();
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         foreach (GameObject _GameObject in UITemplateList)
         {

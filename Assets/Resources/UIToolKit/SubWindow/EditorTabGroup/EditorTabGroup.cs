@@ -83,6 +83,7 @@ namespace EditorScene
 						{
 							stageManager.CreateNewGenerator();
 						});
+						block.AddToClassList("TabButton");
 						block.SetObjectName(type.ToString());
 						Content.hierarchy.Add(block);
 					}
@@ -120,7 +121,7 @@ namespace EditorScene
 		}
 	}
 	
-	public class ContentBlock:VisualElement
+	public class ContentBlock:Button
 	{
 		private const string styleResource = "UIToolKit/SubWindow/EditorTabGroup/MainStyle";
 

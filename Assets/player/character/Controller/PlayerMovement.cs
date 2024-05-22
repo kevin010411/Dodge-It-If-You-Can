@@ -64,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
             Flip();
         }
 
-        if(Input.GetKeyDown(KeyCode.Mouse0)&&canDash)
+        if(Input.GetKeyDown(KeyCode.LeftShift)&&canDash)
         {
             StartCoroutine(Dash());
         }

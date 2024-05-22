@@ -1,12 +1,10 @@
 using DevUtils;
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
+using System.Linq;
+using System.Runtime.Serialization;
 
 
 public class StageManager:MonoBehaviour
@@ -72,16 +70,26 @@ public class StageManager:MonoBehaviour
 	/// <param name="timeStamp">現在時間戳</param>
 	private void DestroyExpiredGenerator(double timeStamp)
 	{
-		List<GameObject> removeList = new List<GameObject>();
-		foreach (GameObject generator in aliveGenerator)
-			if (generator.GetComponent<BulletGenerator>().start > timeStamp ||
-				generator.GetComponent<BulletGenerator>().end <= timeStamp)
-				removeList.Add(generator);
-		foreach (GameObject generator in removeList)
+		enabled = false;
+		for (int idx = 0; idx < aliveGenerator.Count; ++idx)
 		{
-			aliveGenerator.Remove(generator);
-			Destroy(generator);
+			GameObject generator = aliveGenerator[idx];
+			int genIdx = int.Parse(generator.name.Substring(generator.name.IndexOf("-") + 1));
+			BulletGenerator bulletGenerator = GetBulletGenerator(idx,genIdx);
+			if (bulletGenerator.start > timeStamp ||
+				bulletGenerator.end <= timeStamp)
+			{
+				//Debug.Log($"Remove{idx}");
+				Destroy(aliveGenerator[idx]);
+				aliveGenerator.RemoveAt(idx);
+			}
+			else
+			{
+				generator.name = $"Generator[{idx}]-{genIdx}";
+				++idx;
+			}
 		}
+		enabled = true;
 	}
 	
 	/// <summary>
@@ -95,15 +103,16 @@ public class StageManager:MonoBehaviour
 			return;
 		while (index < StageData.Data.Count && StageData.Data[index].generatorInfo.start <= timeStamp)
 		{
-			GameObject Generator = new GameObject($"Generator-{index}");
+			GameObject Generator = new GameObject($"Generator[{aliveGenerator.Count}]-{index}");
 			Generator.tag = "generator";
 			Generator.AddComponent<BoxCollider2D>().isTrigger = true;
 			try
 			{
 				Type type = Type.GetType(StageData.Data[index].generatorInfo.ClassName); ;
 				BulletGenerator bulletGenerator = (BulletGenerator)Generator.AddComponent(type);
-				int nowIndex = index;
-				bulletGenerator.UpdateInfoEvent.AddListener((info) =>UpdataStageData(nowIndex, info));
+				bulletGenerator.Index = index;
+				bulletGenerator.UpdateInfoEvent.AddListener(UpdataStageData);
+				bulletGenerator.RemoveGeneratorEvent.AddListener(RemoveStageData);
 				bulletGenerator.InitData(StageData.Data[index]);
 				bulletGenerator.SetUIManager(EditorUIManager);
 				aliveGenerator.Add(Generator);
@@ -119,11 +128,33 @@ public class StageManager:MonoBehaviour
 	
 	private void PassTimeToGenerator(double timeStamp)
 	{
-		foreach (GameObject generator in aliveGenerator)
+		for (int idx = 0; idx < aliveGenerator.Count; ++idx)
 		{
-			BulletGenerator nowGen = generator.GetComponent<BulletGenerator>();
-			nowGen.Operation(timeStamp);
+			GameObject obj = aliveGenerator[idx];
+			try
+			{
+				int genIdx = int.Parse(obj.name.Substring(obj.name.IndexOf("-") + 1));
+				BulletGenerator generator = GetBulletGenerator(idx, genIdx);
+				generator.Operation(timeStamp);
+			}
+			catch (Exception e)
+			{
+				Debug.Log($"{obj}:{e}");
+				Debug.Log(obj.name.Substring(obj.name.IndexOf("-") + 1));
+			}
 		}	
+	}
+	private BulletGenerator GetBulletGenerator(int aliveIdx,int genIdx)
+	{
+		try
+		{
+			Type classType = Type.GetType(StageData.Data[genIdx].generatorInfo.ClassName);
+			return (BulletGenerator)aliveGenerator[aliveIdx].GetComponent(classType);
+		}
+		catch (Exception e){ 
+			Debug.LogError($"{e.Message},\n{e.StackTrace}");
+			return null; 
+		}
 	}
 
 	private void UpdateAllBulletPos(double timeStamp)
@@ -182,16 +213,73 @@ public class StageManager:MonoBehaviour
 		enabled = true;
 	}
 
-	private void UpdataStageData(int genratorIndex,SaveData.GeneratorInfo info)
+	private void UpdataStageData(int generatorIndex, SaveData.GeneratorInfo info)
 	{
-		StageData.Data[genratorIndex].UpdataGeneratorInfo(info);
+		double oldStart = StageData.Data[generatorIndex].generatorInfo.start;
+		double oldEnd = StageData.Data[generatorIndex].generatorInfo.end;
+		StageData.Data[generatorIndex].UpdataGeneratorInfo(info);
+		if (oldStart != info.start || oldEnd != info.end)
+		{
+			//Debug.Log($"{oldStart}->{info.start}\n{oldEnd}->{info.end}");
+			List<int> sortedIndex = UtilFunction.ArgSort(StageData.Data);
+			List<int> newIndex = new List<int>(new int[sortedIndex.Count]);
+			for (int i = 0; i < sortedIndex.Count; ++i)
+				newIndex[sortedIndex[i]] = i;
+			//Debug.Log(UtilFunction.ListToString(newIndex));
+			_ResetGeneratorIndex(newIndex);
+			StageData.Data.Sort();
+		}
+
+	}
+	
+	private void RemoveStageData(int generatorIndex)
+	{
+		List<int> newIndex = StageData.Data.Select((item, index) => index).ToList();
+		newIndex[generatorIndex] = -1;
+		for (int i = generatorIndex + 1; i < newIndex.Count; ++i)
+			newIndex[i] = i - 1;
+		enabled = false;
+		_ResetGeneratorIndex(newIndex);
+		index--;
+		StageData.Data.RemoveAt(generatorIndex);
+		for (int i = 0; i < aliveGenerator.Count;)
+		{
+			string genIdx = aliveGenerator[i].name.Substring(aliveGenerator[i].name.IndexOf("-")+1);
+			if (genIdx == "-1")
+			{
+				aliveGenerator.RemoveAt(i);
+			}
+			else
+				++i;
+		}
+		enabled = true;
 	}
 	public void CreateNewGenerator()
 	{
-		StageData.Data.Add(new StageFragment(SaveData.GeneratorInfo.CreateEmptyInfo(timeStamp),
+		StageData.Data.Add(new StageFragment(SaveData.GeneratorInfo.CreateEmptyGenerator(timeStamp),
 			new List<SaveData.BulletInfo>()));
 		StageData.Data.Sort();
 		EditorUIManager.ClickPasueButton();
+		ResetStageStatus();
+	}
+	/// <summary>
+	/// 一一對應舊的index到新的index
+	/// </summary>
+	/// <param name="newIndex"></param>
+	private void _ResetGeneratorIndex(List<int> newIndex)
+	{
+		int offset = 0;
+		for (int idx = 0; idx < aliveGenerator.Count; idx++)
+		{
+			string name = aliveGenerator[idx].name;
+			int start = name.IndexOf("-")+1;
+			int genIdx = int.Parse(name.Substring(start));
+			BulletGenerator generator = GetBulletGenerator(idx,genIdx);
+			generator.Index = newIndex[generator.Index];
+			aliveGenerator[idx].name = $"Generator[{idx - offset}]-{generator.Index}";
+			if (generator.Index == -1)
+				offset = 1;
+		}
 	}
 	public void LoadStageInfo(string DataDir)
 	{
@@ -247,7 +335,10 @@ public class StageDescription
 	public StageDescription(string musicPath, int totalLife, string name, string description)
 	{
 		MusicPath = musicPath;
-		MusicName = Path.GetFileName(musicPath);
+		if (musicPath != null)
+			MusicName = Path.GetFileName(musicPath);
+		else
+			MusicName = "No Music";
 		TotalLife = totalLife;
 		Name = name;
 		Description = description;
@@ -255,7 +346,7 @@ public class StageDescription
 	public StageDescription() 
 	{
 		MusicPath = "";
-		MusicName = "";
+		MusicName = "No Music";
 		TotalLife = 0;
 		Name = "";
 		Description = "";
