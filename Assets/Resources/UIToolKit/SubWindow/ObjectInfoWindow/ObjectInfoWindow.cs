@@ -82,7 +82,7 @@ namespace EditorScene
 			return newRow;
 		}
 		
-		public void AddBulletFoldOut(SaveData.BulletInfo bulletInfo)
+		public void AddBulletFoldOut(SaveData.BulletInfo bulletInfo,int insertIndex = -1)
 		{
 			Foldout BulletInfoContainer = GetBulletInfoContainer();
 			Foldout container = new Foldout();
@@ -107,11 +107,9 @@ namespace EditorScene
 				SaveData.BulletInfo InitInfo = (SaveData.BulletInfo)BuildInitParam.Invoke(null,null);
 				Foldout BulletInfoContainer = GetBulletInfoContainer();
 				int index = BulletInfoContainer.IndexOf(container);
-				int childCount = container.parent.childCount-2;
-				UpdateBulletInfo.Invoke(index, null);
+				UpdateBulletInfo.Invoke(index, InitInfo);
 				container.RemoveFromHierarchy();
-				AddBulletFoldOut(InitInfo);
-				UpdateBulletInfo.Invoke(childCount, InitInfo);
+				AddBulletFoldOut(InitInfo, index);
 			});
 			BulletRow.AddToClassList("paramRow");
 			container.Add(BulletRow);
@@ -121,9 +119,11 @@ namespace EditorScene
 			_AddDoubleField("Interval:", bulletInfo.interval, container);
 
 			foreach (KeyValuePair<string,string> param in bulletInfo.BulletsParams.ToDictionary())
-				_AddBulletParamRow(container, param.Key, param.Value);	
+				_AddBulletParamRow(container, param.Key, param.Value);
 
-			BulletInfoContainer.Insert(BulletInfoContainer.childCount-1,container);
+			if (insertIndex == -1)
+				insertIndex = BulletInfoContainer.childCount - 1;
+			BulletInfoContainer.Insert(insertIndex, container);
 		}
 
 		private DoubleField _AddDoubleField(string title, double value, Foldout container,

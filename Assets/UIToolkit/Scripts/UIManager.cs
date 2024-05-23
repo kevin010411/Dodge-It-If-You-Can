@@ -85,9 +85,12 @@ public class UIManager : MonoBehaviour
             //TODO 浪代琌才夹非
 			StageDescription Data = new StageDescription(MusicPath.value, SetLifeRow.value,
 														StageName.value, SetDescriptionRow.value);
-            stageManager.SaveStageInfo("Custom", StageName.value);
+			string subStageName = StageName.value;
+			if (subStageName == "")
+				subStageName = "Default";
+			stageManager.SaveStageInfo("Custom", subStageName);
 			// TODO 盎代StageName,SubStageName,fileName┪璶―ノめ块
-			JsonController.SaveStageDescription(Data, "Custom", StageName.value);
+			StartCoroutine(JsonController.SaveStageDescription(Data, "Custom", StageName.value));
         });
 
         Button BackHomeButton = rootElement.Q<Button>("BackHomeButton");
@@ -128,9 +131,9 @@ public class UIManager : MonoBehaviour
 			button.name = fileName;
 			button.style.backgroundColor = new Color(0, 0, 0, 0);
 			button.RegisterCallback<ClickEvent>((mouse) => {
-				_SetStageDescription(JsonController.LoadStageDescription(Path.Join(rootDir,"StageDescription.json")));
+				_SetStageDescription(JsonController.LoadStageDescription(Path.Join(PathName, "StageDescription.json")));
 				stageManager.LoadStageInfo(rootDir);
-                if (Directory.Exists(MusicPath))
+                if (File.Exists(MusicPath))
                     soundManager.ChangeTrack(MusicPath);
 			});
 			return button;

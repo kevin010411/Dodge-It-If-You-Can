@@ -34,7 +34,7 @@ public class StageManager:MonoBehaviour
 	}
 	public void SaveStageInfo(string StageName,string SubStageName,string fileName= "StageChart")
 	{
-		JsonController.SaveStageInfo(StageData, StageName, SubStageName, fileName);
+		JsonController.SaveData(StageData, StageName, SubStageName, fileName);
 	}
 	public void ReceiveCurrentTimePoint(double timeStamp)
 	{
@@ -336,7 +336,7 @@ public class StageDescription
 	{
 		MusicPath = musicPath;
 		if (musicPath != null)
-			MusicName = Path.GetFileName(musicPath);
+			MusicName = Path.GetFileNameWithoutExtension(musicPath);
 		else
 			MusicName = "No Music";
 		TotalLife = totalLife;

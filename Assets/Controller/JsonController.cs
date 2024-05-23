@@ -1,33 +1,38 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 static public class JsonController
 {
-	static public void SaveStageDescription(StageDescription SaveData,string StageName
+	static public IEnumerator SaveStageDescription(StageDescription Data,string StageName
 		, string SubStageName, string FileName= "StageDescription")
 	{
+		SaveData(Data, StageName,SubStageName,FileName);
 		string SaveDir = _ComputeSaveDir(StageName, SubStageName, FileName);
-		string Data = JsonUtility.ToJson(SaveData);
+		Task CopyMusic = Task.CompletedTask;
 		try
 		{
-			if (Directory.Exists(SaveData.MusicPath))
+			if (File.Exists(Data.MusicPath))
 			{
-				// TODO ÀË¬d¬O§_¬Û¦P ¬Û¦P¤£°µ¨Æ¡A¤£¬Û¦P«h§R°£
-				if (File.Exists(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3"))
-					File.Delete(Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3");
-				File.Copy(SaveData.MusicPath, Path.GetDirectoryName(SaveDir) + "/StageMusic.mp3", true);
+				string MusicPath = Path.Combine(Path.GetDirectoryName(SaveDir),"StageMusic.mp3");			
+				CopyMusic = Task.Run(() => File.Copy(Data.MusicPath, MusicPath, true)); ;
 			}
 		}
 		catch (Exception ex)
 		{
 			Debug.LogException(ex);
 		}
-		_SaveData(SaveDir, Data);
+		yield return new WaitUntil(() => CopyMusic.IsCompleted);
+
+		if (CopyMusic.IsCompleted)
+			Debug.Log("Copy CompleteğŸ’ğŸ’");
+		else
+			Debug.Log("Copy FailğŸ¤£ğŸ¤£");
 	}
 	static public StageDescription LoadStageDescription(string LoadDir)
 	{
@@ -54,11 +59,11 @@ static public class JsonController
 			return false;
 		return true;
 	}
-	static public void SaveStageInfo(StageInfo SaveData,string StageName
+	static public void SaveData<T>(T Data,string StageName
 		,string SubStageName,string FileName)
 	{
 		string SaveDir = _ComputeSaveDir(StageName, SubStageName, FileName);
-		string data = JsonUtility.ToJson(SaveData);
+		string data = JsonUtility.ToJson(Data);
 		_SaveData(SaveDir, data);
 	}
 	static private void _SaveData<T>(string SaveDir,T Data)
@@ -85,9 +90,9 @@ static public class JsonController
 		, string SubStageName, string SaveFileName)
 	{
 		if (Application.isEditor)
-			return $"{Application.dataPath}/Resources/StageChart/{StageName}/{SubStageName}/{SaveFileName}.json";
+			return Path.Combine(Application.dataPath, "Resources", "StageChart", StageName, SubStageName, $"{SaveFileName}.json");
 		else
-			return $"{Application.persistentDataPath}/Resources/StageChart/{StageName}/{SubStageName}/{SaveFileName}.json";
+			return Path.Combine(Application.persistentDataPath, "Resources", "StageChart", StageName, SubStageName, $"{SaveFileName}.json");
 	}
 
 	static public StageInfo LoadStageInfo(string LoadDir)
@@ -109,7 +114,7 @@ public static class JsonControllerV2
 	}
 }
 
-//¦]¬°¤£¯àÀx¦sDictionary¡A©Ò¥H­nÃB¥~³Ğ«Ø¥iSerializableªºª«¥ó
+//å› ç‚ºä¸èƒ½å„²å­˜Dictionaryï¼Œæ‰€ä»¥è¦é¡å¤–å‰µå»ºå¯Serializableçš„ç‰©ä»¶
 [Serializable]
 public class SerializedDictionary<TKey, TValue> : ISerializationCallbackReceiver
 {

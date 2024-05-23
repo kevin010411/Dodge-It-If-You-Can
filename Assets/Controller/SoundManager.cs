@@ -13,7 +13,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private bool Pause = false;
     [SerializeField][Range(0f, 1f)] private float MusicVolume; 
     [SerializeField][Range(0f, 1f)] private float PlayingStartTime = 0;
-    [HideInInspector] public float TrackLength;
+    //[HideInInspector] 
+    public float TrackLength;
     [HideInInspector] public float TrackProgress;
 
     // Start is called before the first frame update
@@ -69,13 +70,14 @@ public class SoundManager : MonoBehaviour
     
     public void ChangeTrack(string AudioPath)
     {
+        Pause = true;
         var TargetFileStream = File.OpenRead(AudioPath);
         AudioClip AudioClipToChange = FromMp3Stream(TargetFileStream);
-
         LevelTrack = AudioClipToChange;
         this.AudioSource.clip = AudioClipToChange;
-        this.AudioSource.Play();
-    }
+		TrackLength = AudioSource.clip.length;
+		this.AudioSource.Play();
+	}
 
     private AudioClip FromMp3Stream(Stream Mp3Stream)
     {
