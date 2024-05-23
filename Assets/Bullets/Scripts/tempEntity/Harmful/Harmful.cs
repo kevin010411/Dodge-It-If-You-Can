@@ -5,5 +5,5 @@ using UnityEngine;
 abstract public class Harmful : MonoBehaviour
 {
 	[SerializeField]
-	protected float damage = 1.0f;
+	public float damage = 1.0f;
 }

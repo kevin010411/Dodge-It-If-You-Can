@@ -11,7 +11,6 @@ using UnityEngine;
 [Serializable]
 public class BlastBullet : DurationBullet
 {
-    [SerializeField] private DurationBullet bulletPrefab;
     [SerializeField] private Rigidbody2D rb;
 
     protected void Start()
@@ -95,7 +94,7 @@ public class BlastBullet : DurationBullet
         Dictionary<string, string> InitParams = new Dictionary<string, string>();
         InitParams["Damage"] = "1";
         InitParams["SpritePath"] = "Material/Bullet/bullet_1.png";
-        InitParams["subSpriteName"] = "bullet_1_2";
+        InitParams["subSpriteName"] = "bullet_1_3";
         InitParams["Speed"] = "1";
         InitParams["Direction"] = "{X:-1,Y:0}";
         InitParams["Duration"] = "1";

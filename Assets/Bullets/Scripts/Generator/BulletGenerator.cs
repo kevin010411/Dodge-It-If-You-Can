@@ -5,6 +5,8 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 [assembly: GeneratorManager.RegisterGenerator(typeof(BulletGenerator))]
@@ -158,6 +160,11 @@ public class BulletGenerator : MonoBehaviour
 	{
 		RemoveGeneratorEvent.Invoke(Index);
 	}
+	private EventSystem eventSystem;
+	public void Start()
+	{
+		eventSystem = EventSystem.current;
+	}
 
 	public void OnDestroy()
 	{
@@ -167,6 +174,8 @@ public class BulletGenerator : MonoBehaviour
 
 	public void OnMouseUp()
 	{
+		if (eventSystem.IsPointerOverGameObject())
+			return;
 		UpdateGenerator();
 		if (editorUI != null)
 			_ShowObjectInfoWindow();
@@ -174,6 +183,8 @@ public class BulletGenerator : MonoBehaviour
 	private float _MousePressTime = 0;
 	public void OnMouseDown()
 	{
+		if (eventSystem.IsPointerOverGameObject())
+			return;
 		if (editorUI.IsRemoveMode)
 		{
 			//Debug.Log($"Remove{this.gameObject.name}");
@@ -186,7 +197,9 @@ public class BulletGenerator : MonoBehaviour
 	public float DragThershold = 0.3f;
 	public void OnMouseDrag()
 	{
-		if(Time.time - _MousePressTime > DragThershold)
+		if (eventSystem.IsPointerOverGameObject())
+			return;
+		if (Time.time - _MousePressTime > DragThershold)
 		{
 			Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			newPos.z = 0;
