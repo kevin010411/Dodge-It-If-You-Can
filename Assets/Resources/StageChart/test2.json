@@ -187,7 +187,7 @@
                     "interval": 0.3
                 },
                 {
-                    "ClassName": "DurationBullet",
+                    "ClassName": "BounceBullet",
                     "BulletsParams": {
                         "keys": [
                             "SpritePath",
@@ -199,7 +199,7 @@
                         ],
                         "values": [
                             "Assets/Bullets/Material/bullet_1.png",
-                            "bullet_1_9",
+                            "bullet_1_11",
                             "8",
                             "{X:2,Y:-1}",
                             "5",
@@ -208,7 +208,7 @@
                     },
                     "start": 0,
                     "end": 20,
-                    "interval": 0.15
+                    "interval": 0.8
                 }
             ]
         },
@@ -228,7 +228,7 @@
             },
             "content": [
                 {
-                    "ClassName": "DurationBullet",
+                    "ClassName": "BlastBullet",
                     "BulletsParams": {
                         "keys": [
                             "SpritePath",
@@ -241,15 +241,15 @@
                         "values": [
                             "Assets/Bullets/Material/bullet_1.png",
                             "bullet_1_11",
-                            "10",
-                            "{X:0,Y:-1}",
                             "6",
+                            "{X:0,Y:-1}",
+                            "10",
                             "GeneratorPos"
                         ]
                     },
                     "start": 0,
                     "end": 20,
-                    "interval": 0.1
+                    "interval": 1
                 }
             ]
         }

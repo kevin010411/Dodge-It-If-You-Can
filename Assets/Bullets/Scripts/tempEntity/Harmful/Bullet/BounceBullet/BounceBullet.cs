@@ -7,11 +7,12 @@ using UnityEngine;
 
 // Name                 Feature          
 // BlastBullet          碰到牆壁就生成8顆新的DurationBullet
-[assembly: BulletManager.RegisterBullet(typeof(BlastBullet))]
+[assembly: BulletManager.RegisterBullet(typeof(BounceBullet))]
 [Serializable]
-public class BlastBullet : DurationBullet
+public class BounceBullet : DurationBullet
 {
     [SerializeField] private Rigidbody2D rb;
+    private int index = 0;
     protected void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -22,29 +23,28 @@ public class BlastBullet : DurationBullet
         gameObject.layer = LayerMask.NameToLayer("groundLayer");
 
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("EXPLODE");
         string itemName = collision.gameObject.name;
         Vector2 vec = collision.ClosestPoint(transform.position);
-        if (itemName == "Ground" || itemName == "flotFloor" || itemName == "Player")
+        if (itemName == "Ground" || itemName == "flotFloor")
         {
-            Explode(vec);
+            Bounce(vec);
         }
     }
 
-    private void Explode(Vector2 pos)
+    private void Bounce(Vector2 pos)
     {
-        for (int i = 7; i >= 0; i--)
-        {
-            float angle = i * 45f; // 360 degrees divided by 8
-            Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-            SpawnBullet(direction, i, pos);
-        }
+        Vector2 dir = BulletInfo.Direction;
+        Vector2 newDir = Vector2.Reflect(dir, Vector2.up);
+        Debug.Log(BulletInfo.Image.ToString());
+        SpawnBullet(newDir, pos);
         Destroy(gameObject);
-
     }
-    private void SpawnBullet(Vector2 direction, int index, Vector2 pos)
+
+    private void SpawnBullet(Vector2 direction, Vector2 pos)
     {
         string _x = direction.x.ToString("0.0");
         string _y = direction.y.ToString("0.0");
@@ -52,14 +52,15 @@ public class BlastBullet : DurationBullet
 
         Dictionary<string, string> InitParams = new Dictionary<string, string>();
         InitParams["Damage"] = "1";
-        InitParams["SpritePath"] = "Assets/Bullets/Material/bullet_1.png";
-        InitParams["subSpriteName"] = "bullet_1_8";
-        InitParams["Speed"] = "10";
+        InitParams["SpritePath"] = "Material/Bullet/bullet_1.png";
+        InitParams["subSpriteName"] = "bullet_1_11";
+        InitParams["Speed"] = BulletInfo.Speed.ToString();
         InitParams["Direction"] = vec;
-        InitParams["Duration"] = "2";
-        InitParams["posDescribe"] = "GeneratorPos";
+        InitParams["Duration"] = BulletInfo.Duration.ToString();
+        InitParams["posDescribe"] = BulletInfo.PosDescribe.ToString();
 
-        GameObject tempObj = new GameObject($"BlastScrap-{index}");
+        GameObject tempObj = new GameObject($"BounceBullet-{index}");
+        index++;
 
         tempObj.tag = "bullet";
         SpriteRenderer renderer = tempObj.AddComponent<SpriteRenderer>();
@@ -83,7 +84,7 @@ public class BlastBullet : DurationBullet
     public new static SaveData.BulletInfo CreateInitBulletInfo()
     {
         Dictionary<string, string> InitParams = CreateInitBulletParam();
-        SaveData.BulletInfo data = new SaveData.BulletInfo("BlastBullet", InitParams, 0, 0, 1);
+        SaveData.BulletInfo data = new SaveData.BulletInfo("BounceBullet", InitParams, 0, 0, 1);
         return data;
     }
     public new static Dictionary<string, string> CreateInitBulletParam()
@@ -91,7 +92,7 @@ public class BlastBullet : DurationBullet
         Dictionary<string, string> InitParams = new Dictionary<string, string>();
         InitParams["Damage"] = "1";
         InitParams["SpritePath"] = "Material/Bullet/bullet_1.png";
-        InitParams["subSpriteName"] = "bullet_1_8";
+        InitParams["subSpriteName"] = "bullet_1_11";
         InitParams["Speed"] = "1";
         InitParams["Direction"] = "{X:-1,Y:0}";
         InitParams["Duration"] = "1";
